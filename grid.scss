@@ -1,0 +1,139 @@
+/**************************************************
+Grid system
+**************************************************/
+
+/**** Instructions ****/
+/*
+Wrap columns in .row
+Use .col-{{number 1 to $columns}} for a column
+Use .bump-{{number 1 to $columns}} to offset a column
+
+For margins use mt, mr, mb, ml followed by -{{10 to 60 at intervals of 10}}
+
+Columns will loose float at screen width of $breakpoint
+To retain floats at smaller widths use the following classes i.e <div class="col-6 md">:
+                  .md to break floats at $medium
+                  .sm to break floats at $small
+                  .xs to reatin floats at all widths
+
+Use .hide-at-{{bp/md/sm}} to hide an element at the respective widths
+
+/**** Variables ****/
+$width:      1280px;
+$columns:    12;
+$gutter:     30px;
+$breakpoint: 768px;
+$medium:     650px;
+$small:      500px;
+
+/**** Grid mixins ****/
+@mixin col-builder($i, $columns) {
+  width: percentage($i/$columns);
+}
+
+@mixin bumper($i, $columns) {
+  margin-left: percentage($i/$columns);
+}
+
+@mixin margins($i, $marginType) {
+  @if $marginType == mt {
+    margin-top: $i * 1px;
+  }
+  @if $marginType == mr {
+    margin-right: $i * 1px;
+  }
+  @if $marginType == mb {
+    margin-bottom: $i * 1px;
+  }
+  @if $marginType == ml {
+    margin-left: $i * 1px;
+  }
+}
+
+/**** Container ****/
+.container {
+  max-width: $width;
+  margin: 0 auto;
+  padding: 0 $gutter/2 0 $gutter/2;
+}
+
+/**** Grid row w/clearfix ****/
+.row {
+  margin: 0 (-$gutter/2) 0 (-$gutter/2);
+
+  &::after {
+    content: '';
+    display: table;
+    clear: both;
+  }
+}
+
+/**** Build out columns ****/
+@for $i from 1 through $columns {
+  .col-#{$i} {
+    @include col-builder($i, $columns);
+  }
+}
+
+[class*='col-'] {
+  float: left;
+  min-height: 1px;
+  padding: 0 $gutter/2 0 $gutter/2;
+}
+
+/**** Bumper ****/
+@for $i from 1 through $columns {
+  .bump-#{$i} {
+    @include bumper($i, $columns);
+  }
+}
+
+/**** Margins ****/
+@for $i from 1 through 6 {
+  .mt-#{$i*10} {
+    @include margins($i*10, mt);
+  }
+  .mr-#{$i*10} {
+    @include margins($i*10, mr);
+  }
+  .mb-#{$i*10} {
+    @include margins($i*10, mb);
+  }
+  .ml-#{$i*10} {
+    @include margins($i*10, ml);
+  }
+}
+
+/**** Screen width actions ****/
+@media (max-width: $breakpoint) {
+  [class*='col-']:not([class*='md']):not([class*='sm']):not([class*='xs']) { // xs wont break
+    float: none;
+    width: 100%;
+  }
+
+  .hide-at-bp {
+    display: none;
+  }
+}
+
+@media (max-width: $medium) {
+  [class*='col-'][class*='md'] {
+    float: none;
+    width: 100%;
+  }
+
+  .hide-at-md {
+    display: none;
+  }
+}
+
+@media (max-width: $small) {
+  [class*='col-'][class*='sm'] {
+    float: none;
+    width: 100%;
+  }
+
+  .hide-at-sm {
+    display: none;
+  }
+}
